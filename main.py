@@ -8,8 +8,8 @@ class AnnotationTool:
         self.master = master
         self.master.title("YOLOv8 Annotation Tool")
 
-        self.canvas_width = 7500
-        self.canvas_height = 1200
+        self.canvas_width = 1750
+        self.canvas_height = 625
         self.canvas = tk.Canvas(self.master, width=self.canvas_width, height=self.canvas_height, bg='white')
         self.canvas.pack()
 
@@ -114,7 +114,15 @@ class AnnotationTool:
             return
 
         self.exporting = True  # Set exporting flag to True
-        self.highlight_next_polygon()  # Start highlighting polygons
+        self.current_polygon_index = 0  # Reset polygon index
+        self.export_next_polygon()  # Start exporting polygons
+
+    def export_next_polygon(self):
+        if self.current_polygon_index < len(self.annotations):
+            self.choose_class()  # Prompt user to select class ID
+        else:
+            print("All annotations exported successfully.")
+            self.exporting = False  # Reset exporting flag
 
     def highlight_next_polygon(self):
         if self.current_polygon_index < len(self.polygon_items):
@@ -140,6 +148,13 @@ class AnnotationTool:
                                     command=lambda: self.class_selected(class_window, class_var))
             done_button.pack()
 
+            # Remove blue indication from the previously highlighted polygon
+            if self.current_polygon_index > 0:
+                self.canvas.itemconfig(self.polygon_items[self.current_polygon_index - 1], outline="red", width=2)
+
+            # Highlight the current polygon
+            self.canvas.itemconfig(self.polygon_items[self.current_polygon_index], outline="blue", width=2)
+
             class_window.wait_window()
 
     def class_selected(self, class_window, class_var):
@@ -147,13 +162,14 @@ class AnnotationTool:
         class_id = list(self.class_labels.keys())[list(self.class_labels.values()).index(chosen_class)]
 
         with open(f"data\{self.image_name}_gt.txt", 'a') as f:  # Use image name for the file
-            for annotation in self.annotations:
-                yolo_format = self.convert_to_yolov8(annotation)
-                f.write(f"{class_id} {' '.join(str(coord) for coord in yolo_format)}\n")
+            annotation = self.annotations[self.current_polygon_index]
+            yolo_format = self.convert_to_yolov8(annotation)
+            f.write(f"{class_id} {' '.join(str(coord) for coord in yolo_format)}")
+            if self.current_polygon_index < len(self.annotations) - 1:  # Check if it's not the last annotation
+                f.write("\n")  # Append newline if it's not the last annotation
 
-        self.canvas.itemconfig(self.polygon_items[self.current_polygon_index], outline="red", width=2)
         self.current_polygon_index += 1  # Move to the next polygon
-        self.highlight_next_polygon()  # Highlight the next polygon
+        self.export_next_polygon()  # Export the next polygon
 
     def convert_to_yolov8(self, coordinates):
         image_width, image_height = self.image.size
