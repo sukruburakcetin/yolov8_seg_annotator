@@ -1,3 +1,4 @@
+import csv
 import tkinter as tk
 from tkinter import filedialog
 from PIL import Image, ImageTk
@@ -12,8 +13,6 @@ class AnnotationTool:
         self.canvas_height = 625
         self.canvas = tk.Canvas(self.master, width=self.canvas_width, height=self.canvas_height, bg='white')
         self.canvas.pack()
-
-
 
         self.class_labels = {}
         self.annotations = []
@@ -38,11 +37,14 @@ class AnnotationTool:
         self.class_label_entry = tk.Entry(self.master)
         self.class_label_entry.pack(side=tk.LEFT)
 
+        self.load_classes_button = tk.Button(self.master, text="Load Classes from CSV", command=self.load_classes_from_csv)
+        self.load_classes_button.pack(side=tk.LEFT)
+
         self.load_image_button = tk.Button(self.master, text="Load Image", command=self.load_image)
         self.load_image_button.pack(side=tk.LEFT)
 
         # Load the logo image
-        logo_image = Image.open("cbs_logo.png")  # Replace "logo.png" with the path to your logo image
+        logo_image = Image.open("logo\cbs_logo.png")  # Replace "logo.png" with the path to your logo image
         logo_image = logo_image.resize((50, 50))  # Resize the logo image as needed
         logo_photo = ImageTk.PhotoImage(logo_image)
 
@@ -55,11 +57,23 @@ class AnnotationTool:
         logo_label.image = logo_photo  # Keep a reference to the image to prevent it from being garbage collected
         logo_label.pack(side=tk.LEFT)
 
+        # Initialize class assignment dialog
+        self.class_window = None
+        self.class_var = tk.StringVar()
+        self.class_var.set("Select Class")
+        self.class_options = []
+
     def load_image(self):
+        # Destroy any existing class windows
+        for widget in self.master.winfo_children():
+            if isinstance(widget, tk.Toplevel):
+                widget.destroy()
+
         file_path = filedialog.askopenfilename(filetypes=[("Image files", "*.png;*.jpg;*.jpeg")])
         if file_path:
-            # Clear existing polygons
+            # Clear existing polygons and annotations
             self.clear_polygons()
+            self.annotations = []
 
             self.image_name = file_path.split("/")[-1].split(".jpg")[0]  # Get the image name
             self.image = Image.open(file_path)
@@ -115,14 +129,37 @@ class AnnotationTool:
 
         self.exporting = True  # Set exporting flag to True
         self.current_polygon_index = 0  # Reset polygon index
-        self.export_next_polygon()  # Start exporting polygons
+
+        # Open a single "Choose Class" dialog
+        self.class_window = tk.Toplevel(self.master)
+        self.class_window.title("Choose Class")
+
+        self.class_var = tk.StringVar(self.class_window)
+        self.class_var.set("Select Class")
+
+        self.class_options = list(self.class_labels.values())
+        self.class_menu = tk.OptionMenu(self.class_window, self.class_var, *self.class_options)
+        self.class_menu.pack()
+
+        self.done_button = tk.Button(self.class_window, text="Done", command=self.class_selected)
+        self.done_button.pack()
+
+        # Start exporting polygons
+        self.export_next_polygon()
 
     def export_next_polygon(self):
         if self.current_polygon_index < len(self.annotations):
-            self.choose_class()  # Prompt user to select class ID
+            # Remove blue indication from the previously highlighted polygon
+            if self.current_polygon_index > 0:
+                self.canvas.itemconfig(self.polygon_items[self.current_polygon_index - 1], outline="red", width=2)
+
+            # Highlight the current polygon
+            self.canvas.itemconfig(self.polygon_items[self.current_polygon_index], outline="blue", width=2)
+
         else:
             print("All annotations exported successfully.")
             self.exporting = False  # Reset exporting flag
+            self.class_window.destroy()  # Close the "Choose Class" dialog after all polygons are exported
 
     def highlight_next_polygon(self):
         if self.current_polygon_index < len(self.polygon_items):
@@ -157,11 +194,11 @@ class AnnotationTool:
 
             class_window.wait_window()
 
-    def class_selected(self, class_window, class_var):
-        chosen_class = class_var.get()
+    def class_selected(self):
+        chosen_class = self.class_var.get()
         class_id = list(self.class_labels.keys())[list(self.class_labels.values()).index(chosen_class)]
 
-        with open(f"data\{self.image_name}_gt.txt", 'a') as f:  # Use image name for the file
+        with open(f"data\labels\{self.image_name}_gt.txt", 'a') as f:  # Use image name for the file
             annotation = self.annotations[self.current_polygon_index]
             yolo_format = self.convert_to_yolov8(annotation)
             f.write(f"{class_id} {' '.join(str(coord) for coord in yolo_format)}")
@@ -180,6 +217,18 @@ class AnnotationTool:
             normalized_coords.extend([x, y])
         yolov8_format = [f"{coord:.6f}" for coord in normalized_coords]
         return yolov8_format
+
+    def load_classes_from_csv(self):
+        file_path = filedialog.askopenfilename(filetypes=[("CSV files", "*.csv")])
+        if file_path:
+            with open(file_path, 'r') as csvfile:
+                csvreader = csv.reader(csvfile)
+                for idx, row in enumerate(csvreader):
+                    class_label = row[0]
+                    class_id = idx  # Assign sequential numeric IDs
+                    self.class_labels[str(class_id)] = class_label
+                    self.class_options.append(class_label)
+                print("Classes loaded from CSV:", self.class_labels)
 
 
 def main():
