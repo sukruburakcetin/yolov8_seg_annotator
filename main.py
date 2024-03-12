@@ -1,11 +1,29 @@
 import csv
+import os
+import shutil
+import sys
 import tkinter as tk
-from tkinter import filedialog
+from tkinter import filedialog, ttk
 from PIL import Image, ImageTk
+from ttkthemes.themed_style import ThemedStyle
+
+
+class PrintRedirector:
+    def __init__(self, text_widget):
+        self.text_widget = text_widget
+        self.font = ("Segoe UI", 10)
+
+    def write(self, text):
+        self.text_widget.configure(state=tk.NORMAL)
+        # Append ">" character to the beginning of each line
+        self.text_widget.insert(tk.END, text)
+        self.text_widget.configure(state=tk.DISABLED, font=self.font)
+        self.text_widget.see(tk.END)  # Scroll to the end of the text widget
 
 
 class AnnotationTool:
     def __init__(self, master):
+        self.class_menu = None
         self.master = master
         self.master.title("YOLOv8 Annotation Tool")
 
@@ -22,40 +40,58 @@ class AnnotationTool:
         self.current_polygon_index = 0  # Track the index of the current polygon
         self.exporting = False  # Flag to indicate if exporting is in progress
 
-        self.create_button = tk.Button(self.master, text="Create Polygon", command=self.create_polygon)
-        self.create_button.pack(side=tk.LEFT)
+        self.style = ThemedStyle(self.master)
+        self.style.set_theme('clearlooks')  # Choose a modern theme
 
-        self.finish_button = tk.Button(self.master, text="Finish Polygon", command=self.finish_polygon)
-        self.finish_button.pack(side=tk.LEFT)
+        self.create_button = ttk.Button(self.master, text="Create Polygon", command=self.create_polygon)
+        self.create_button.pack(side=tk.LEFT, padx=10, pady=10)
 
-        self.export_button = tk.Button(self.master, text="Export Annotations", command=self.export_annotations)
-        self.export_button.pack(side=tk.LEFT)
+        self.finish_button = ttk.Button(self.master, text="Finish Polygon", command=self.finish_polygon)
+        self.finish_button.pack(side=tk.LEFT, padx=10, pady=10)
 
-        self.add_class_button = tk.Button(self.master, text="Add Class", command=self.add_class)
-        self.add_class_button.pack(side=tk.LEFT)
+        self.export_button = ttk.Button(self.master, text="Export Annotations", command=self.export_annotations)
+        self.export_button.pack(side=tk.LEFT, padx=10, pady=10)
 
-        self.class_label_entry = tk.Entry(self.master)
-        self.class_label_entry.pack(side=tk.LEFT)
+        self.add_class_button = ttk.Button(self.master, text="Add Class", command=self.add_class)
+        self.add_class_button.pack(side=tk.LEFT, padx=10, pady=10)
 
-        self.load_classes_button = tk.Button(self.master, text="Load Classes from CSV", command=self.load_classes_from_csv)
-        self.load_classes_button.pack(side=tk.LEFT)
+        self.class_label_entry = ttk.Entry(self.master)
+        self.class_label_entry.pack(side=tk.LEFT, padx=10, pady=10)
 
-        self.load_image_button = tk.Button(self.master, text="Load Image", command=self.load_image)
-        self.load_image_button.pack(side=tk.LEFT)
+        self.load_classes_button = ttk.Button(self.master, text="Load Classes from CSV", command=self.load_classes_from_csv)
+        self.load_classes_button.pack(side=tk.LEFT, padx=10, pady=10)
+
+        self.load_image_button = ttk.Button(self.master, text="Load Image", command=self.load_image)
+        self.load_image_button.pack(side=tk.LEFT, padx=10, pady=10)
+
+        # Image name label
+        self.image_name_label = tk.Label(self.master, text="Image: N/A", bg="white")
+        self.image_name_label.pack(side=tk.LEFT, padx=10, pady=10)
+
+        # Create a text widget to display prints
+        self.print_output = tk.Text(self.master, wrap=tk.WORD, height=4, width=50)
+        self.print_output.pack(side=tk.LEFT, padx=10, pady=10)
+        self.print_output.configure(state=tk.DISABLED)  # Make the text widget read-only
+
+        # Redirect prints to the text widget
+        sys.stdout = PrintRedirector(self.print_output)
+        sys.stderr = PrintRedirector(self.print_output)
+
+        # Developer name label
+        developer_label = tk.Label(self.master, text="Developer: \nŞükrü Burak Çetin", bg="white")
+        developer_label.pack(side=tk.RIGHT, padx=10, pady=10)
 
         # Load the logo image
-        logo_image = Image.open("logo\cbs_logo.png")  # Replace "logo.png" with the path to your logo image
+        logo_image = Image.open("logo/cbs_logo.png")  # Replace "logo.png" with the path to your logo image
         logo_image = logo_image.resize((50, 50))  # Resize the logo image as needed
         logo_photo = ImageTk.PhotoImage(logo_image)
 
         # Logo label
-        logo_label = tk.Label(self.master, image=logo_photo)
+        logo_label = tk.Label(self.master, image=logo_photo, bg="white")
         logo_label.image = logo_photo  # Keep a reference to the image to prevent it from being garbage collected
-        logo_label.pack(side=tk.LEFT)
+        logo_label.pack(side=tk.RIGHT, padx=10, pady=10)
 
-        # Developer name label
-        developer_label = tk.Label(self.master, text="Developer: Şükrü Burak Çetin")
-        developer_label.pack(side=tk.LEFT)
+
 
         # Initialize class assignment dialog
         self.class_window = None
@@ -63,19 +99,38 @@ class AnnotationTool:
         self.class_var.set("Select Class")
         self.class_options = []
 
+        # self.class_window = tk.Toplevel(self.master)
+        # self.class_window.title("Class Assignment")
+        # self.class_window.configure(bg="white")
+
+        # Add label and combobox for class selection
+        # class_label = tk.Label(self.class_window, text="Select Class:", bg="white")
+        # class_label.pack(padx=10, pady=5)
+        #
+        # class_combobox = ttk.Combobox(self.class_window, textvariable=self.class_var, values=self.class_options)
+        # class_combobox.pack(padx=10, pady=5)
+
+
     def load_image(self):
         # Destroy any existing class windows
         for widget in self.master.winfo_children():
             if isinstance(widget, tk.Toplevel):
                 widget.destroy()
 
-        file_path = filedialog.askopenfilename(filetypes=[("Image files", "*.png;*.jpg;*.jpeg")])
+        initial_dir = self.last_image_directory if hasattr(self, 'last_image_directory') else '/'
+        initial_file = self.last_loaded_image if hasattr(self, 'last_loaded_image') else ''
+        file_path = filedialog.askopenfilename(initialdir=initial_dir, initialfile=initial_file,
+                                               filetypes=[("Image files", "*.png;*.jpg;*.jpeg")])
         if file_path:
+            # Extract directory path and file name from the selected file path
+            self.last_image_directory, self.last_loaded_image = os.path.split(file_path)
+
             # Clear existing polygons and annotations
             self.clear_polygons()
             self.annotations = []
 
-            self.image_name = file_path.split("/")[-1].split(".jpg")[0]  # Get the image name
+            self.image_name = self.last_loaded_image.split(".jpg")[0]  # Get the image name
+            self.image_name_label.config(text=f"Image: {self.image_name}")  # Update image name label
             self.image = Image.open(file_path)
             # Resize image while maintaining aspect ratio
             self.image.thumbnail((self.canvas_width, self.canvas_height))
@@ -87,7 +142,7 @@ class AnnotationTool:
         if class_label:
             self.class_labels[len(self.class_labels)] = class_label
             self.class_label_entry.delete(0, tk.END)
-            print("Class '{}' added with ID {}".format(class_label, len(self.class_labels) - 1))
+            print("Class '{}' added with ID {}.".format(class_label, len(self.class_labels) - 1))
 
     def create_polygon(self):
         self.canvas.bind("<Button-1>", self.on_click)
@@ -132,20 +187,38 @@ class AnnotationTool:
 
         # Open a single "Choose Class" dialog
         self.class_window = tk.Toplevel(self.master)
+
         self.class_window.title("Choose Class")
 
         self.class_var = tk.StringVar(self.class_window)
         self.class_var.set("Select Class")
 
         self.class_options = list(self.class_labels.values())
-        self.class_menu = tk.OptionMenu(self.class_window, self.class_var, *self.class_options)
-        self.class_menu.pack()
+        self.class_menu = ttk.Combobox(self.class_window, textvariable=self.class_var, values=self.class_options)
 
-        self.done_button = tk.Button(self.class_window, text="Done", command=self.class_selected)
-        self.done_button.pack()
+        self.class_menu.pack(padx=50, pady=5)
+        self.done_button = ttk.Button(self.class_window, text="Done", command=self.class_selected)
+        self.done_button.pack(padx=50, pady=5)
 
         # Start exporting polygons
         self.export_next_polygon()
+
+
+    def move_image_to_done(self):
+        # Check and create 'data/annotated' directory if it doesn't exist
+        done_directory = os.path.join('data', 'annotated')
+        if not os.path.exists(done_directory):
+            os.makedirs(done_directory)
+
+        # Move the image to the 'done' directory
+        if hasattr(self, 'last_image_directory') and hasattr(self, 'last_loaded_image'):
+            source_path = os.path.join(self.last_image_directory, self.last_loaded_image)
+            destination_path = os.path.join(done_directory, self.last_loaded_image)
+            try:
+                shutil.move(source_path, destination_path)
+                print(f"Image {self.last_loaded_image} moved to 'data/annotated' directory.")
+            except Exception as e:
+                print(f"Error moving image to 'done' directory: {e}")
 
     def export_next_polygon(self):
         if self.current_polygon_index < len(self.annotations):
@@ -158,6 +231,8 @@ class AnnotationTool:
 
         else:
             print("All annotations exported successfully.")
+            # Call move_image_to_done method at the end of the export process
+            self.move_image_to_done()
             self.exporting = False  # Reset exporting flag
             self.class_window.destroy()  # Close the "Choose Class" dialog after all polygons are exported
 
@@ -178,12 +253,13 @@ class AnnotationTool:
             class_var.set("Select Class")
 
             class_options = list(self.class_labels.values())
-            class_menu = tk.OptionMenu(class_window, class_var, *class_options)
-            class_menu.pack()
+            class_menu = ttk.Combobox(class_window, class_var, *class_options)
 
-            done_button = tk.Button(class_window, text="Done",
+            class_menu.pack(padx=50, pady=15)
+
+            done_button = ttk.Button(class_window, text="Done",
                                     command=lambda: self.class_selected(class_window, class_var))
-            done_button.pack()
+            done_button.pack(padx=50, pady=15)
 
             # Remove blue indication from the previously highlighted polygon
             if self.current_polygon_index > 0:
