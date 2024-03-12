@@ -48,14 +48,14 @@ class AnnotationTool:
         logo_image = logo_image.resize((50, 50))  # Resize the logo image as needed
         logo_photo = ImageTk.PhotoImage(logo_image)
 
-        # Developer name label
-        developer_label = tk.Label(self.master, text="Developer: Şükrü Burak Çetin")
-        developer_label.pack(side=tk.LEFT)
-
         # Logo label
         logo_label = tk.Label(self.master, image=logo_photo)
         logo_label.image = logo_photo  # Keep a reference to the image to prevent it from being garbage collected
         logo_label.pack(side=tk.LEFT)
+
+        # Developer name label
+        developer_label = tk.Label(self.master, text="Developer: Şükrü Burak Çetin")
+        developer_label.pack(side=tk.LEFT)
 
         # Initialize class assignment dialog
         self.class_window = None
@@ -95,7 +95,7 @@ class AnnotationTool:
 
     def finish_polygon(self):
         if len(self.current_polygon) > 2:
-            polygon_item = self.canvas.create_polygon(self.current_polygon, outline="red", fill="", width=2)
+            polygon_item = self.canvas.create_polygon(self.current_polygon, outline="yellow", fill="", width=2)
             self.polygon_items.append(polygon_item)
             self.annotations.append(self.current_polygon)
             self.current_polygon = []
@@ -106,7 +106,7 @@ class AnnotationTool:
     def on_click(self, event):
         x, y = event.x, event.y
         self.current_polygon.extend([x, y])
-        self.canvas.create_oval(x - 2, y - 2, x + 2, y + 2, fill="red", tags="points")  # Add "points" tag to the oval
+        self.canvas.create_oval(x - 2, y - 2, x + 2, y + 2, fill="yellow", tags="points")  # Add "points" tag to the oval
 
     def clear_polygons(self):
         for item in self.polygon_items:
@@ -151,7 +151,7 @@ class AnnotationTool:
         if self.current_polygon_index < len(self.annotations):
             # Remove blue indication from the previously highlighted polygon
             if self.current_polygon_index > 0:
-                self.canvas.itemconfig(self.polygon_items[self.current_polygon_index - 1], outline="red", width=2)
+                self.canvas.itemconfig(self.polygon_items[self.current_polygon_index - 1], outline="yellow", width=2)
 
             # Highlight the current polygon
             self.canvas.itemconfig(self.polygon_items[self.current_polygon_index], outline="blue", width=2)
@@ -187,7 +187,7 @@ class AnnotationTool:
 
             # Remove blue indication from the previously highlighted polygon
             if self.current_polygon_index > 0:
-                self.canvas.itemconfig(self.polygon_items[self.current_polygon_index - 1], outline="red", width=2)
+                self.canvas.itemconfig(self.polygon_items[self.current_polygon_index - 1], outline="yellow", width=2)
 
             # Highlight the current polygon
             self.canvas.itemconfig(self.polygon_items[self.current_polygon_index], outline="blue", width=2)
