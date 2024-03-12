@@ -82,7 +82,7 @@ class AnnotationTool:
         developer_label.pack(side=tk.RIGHT, padx=10, pady=10)
 
         # Load the logo image
-        logo_image = Image.open("logo/cbs_logo.png")  # Replace "logo.png" with the path to your logo image
+        logo_image = Image.open("logo/yolov8_annotator_logo.png")  # Replace "logo.png" with the path to your logo image
         logo_image = logo_image.resize((50, 50))  # Resize the logo image as needed
         logo_photo = ImageTk.PhotoImage(logo_image)
 
