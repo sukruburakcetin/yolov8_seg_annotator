@@ -58,7 +58,8 @@ class AnnotationTool:
         self.class_label_entry = ttk.Entry(self.master)
         self.class_label_entry.pack(side=tk.LEFT, padx=10, pady=10)
 
-        self.load_classes_button = ttk.Button(self.master, text="Load Classes from CSV", command=self.load_classes_from_csv)
+        self.load_classes_button = ttk.Button(self.master, text="Load Classes from CSV",
+                                              command=self.load_classes_from_csv)
         self.load_classes_button.pack(side=tk.LEFT, padx=10, pady=10)
 
         self.load_image_button = ttk.Button(self.master, text="Load Image", command=self.load_image)
@@ -91,8 +92,6 @@ class AnnotationTool:
         logo_label.image = logo_photo  # Keep a reference to the image to prevent it from being garbage collected
         logo_label.pack(side=tk.RIGHT, padx=10, pady=10)
 
-
-
         # Initialize class assignment dialog
         self.class_window = None
         self.class_var = tk.StringVar()
@@ -109,7 +108,6 @@ class AnnotationTool:
         #
         # class_combobox = ttk.Combobox(self.class_window, textvariable=self.class_var, values=self.class_options)
         # class_combobox.pack(padx=10, pady=5)
-
 
     def load_image(self):
         # Destroy any existing class windows
@@ -161,7 +159,8 @@ class AnnotationTool:
     def on_click(self, event):
         x, y = event.x, event.y
         self.current_polygon.extend([x, y])
-        self.canvas.create_oval(x - 2, y - 2, x + 2, y + 2, fill="yellow", tags="points")  # Add "points" tag to the oval
+        self.canvas.create_oval(x - 2, y - 2, x + 2, y + 2, fill="yellow",
+                                tags="points")  # Add "points" tag to the oval
 
     def clear_polygons(self):
         for item in self.polygon_items:
@@ -202,7 +201,6 @@ class AnnotationTool:
 
         # Start exporting polygons
         self.export_next_polygon()
-
 
     def move_image_to_done(self):
         # Check and create 'data/annotated' directory if it doesn't exist
@@ -258,7 +256,7 @@ class AnnotationTool:
             class_menu.pack(padx=50, pady=15)
 
             done_button = ttk.Button(class_window, text="Done",
-                                    command=lambda: self.class_selected(class_window, class_var))
+                                     command=lambda: self.class_selected(class_window, class_var))
             done_button.pack(padx=50, pady=15)
 
             # Remove blue indication from the previously highlighted polygon
@@ -274,7 +272,7 @@ class AnnotationTool:
         chosen_class = self.class_var.get()
         class_id = list(self.class_labels.keys())[list(self.class_labels.values()).index(chosen_class)]
 
-        with open(f"data\labels\{self.image_name}_gt.txt", 'a') as f:  # Use image name for the file
+        with open(f"results/labels/{self.image_name}_gt.txt", 'a') as f:  # Use image name for the file
             annotation = self.annotations[self.current_polygon_index]
             yolo_format = self.convert_to_yolov8(annotation)
             f.write(f"{class_id} {' '.join(str(coord) for coord in yolo_format)}")
