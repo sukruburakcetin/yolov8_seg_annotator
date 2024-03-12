@@ -1,0 +1,1 @@
+Annotated data will be moved into the directory to avoid complexity when user selects the next data that will be annotated.
