@@ -28,6 +28,7 @@ Data Organization
 │   └── results # directory for the Yolo formatted labeling results
 │       └── labels # converted to YOLO format result txt according to image file name
 ├── main # source code for the tool
+├── main.spec # exe supplementary
 ├── README.md
 └── requirements.txt
 ```
