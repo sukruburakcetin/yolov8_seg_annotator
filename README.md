@@ -3,7 +3,7 @@ yolov8-annotator
 
 A simple tool for labeling object maks in images, implemented with Python Tkinter. 
 
-![Alt text](logo/yolov8_annotator_logo.png?raw=true "Title")
+![Alt text](https://images2.imgbox.com/12/d9/7YNMMC61_o.png?raw=true "Title")
 
 ![Alt text](https://images2.imgbox.com/5d/04/RrK3Ocy5_o.png?raw=true "Title")
 
