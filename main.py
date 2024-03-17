@@ -3,7 +3,10 @@ import os
 import shutil
 import sys
 import tkinter as tk
+from io import BytesIO
 from tkinter import filedialog, ttk
+from urllib.request import urlopen
+
 from PIL import Image, ImageTk
 from ttkthemes.themed_style import ThemedStyle
 
@@ -82,8 +85,12 @@ class AnnotationTool:
         developer_label = tk.Label(self.master, text="Developer: \nŞükrü Burak Çetin", bg="white")
         developer_label.pack(side=tk.RIGHT, padx=10, pady=10)
 
-        # Load the logo image
-        logo_image = Image.open("logo/yolov8_annotator_logo.png")  # Replace "logo.png" with the path to your logo image
+        # Load the logo image from URL
+        logo_url = "https://images2.imgbox.com/12/d9/7YNMMC61_o.png"  # Replace with your logo URL
+        with urlopen(logo_url) as response:
+            logo_data = response.read()
+
+        logo_image = Image.open(BytesIO(logo_data))
         logo_image = logo_image.resize((50, 50))  # Resize the logo image as needed
         logo_photo = ImageTk.PhotoImage(logo_image)
 
