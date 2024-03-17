@@ -16,16 +16,19 @@ A simple tool for labeling object maks in images, implemented with Python Tkinte
 
 Data Organization
 -----------------
-yolov8-annotator  
-|  
-|--data/                    *# directory containing the images to be labeled* <br>
-&nbsp;&nbsp;&nbsp;|--annotated/               *# After the pictures are annotated, they are saved in this folder.e*  
-&nbsp;&nbsp;&nbsp;|--samples/               *# main image directory*  
-|--results/                    *# directory for the Yolo formatted labeling results*  
-&nbsp;&nbsp;&nbsp;|--labels/       *# converted to YOLO format result txt according to image file name* <br>
-|--dist/                    *# exe file of the script*  
-|--main.py                    *# source code for the tool*  
-
+```bash
+├── app
+│   ├── data # directory containing the images to be labeled
+│       ├── annotated # after the pictures are annotated, they are saved in this folder.
+│       └── samples # main image directory
+│   ├── dist # exe file of the script
+│   ├── logo
+│   └── results # directory for the Yolo formatted labeling results
+│       └── labels # converted to YOLO format result txt according to image file name
+├── main # source code for the tool
+├── README.md
+└── requirements.txt
+```
 
 # Requirements
 
