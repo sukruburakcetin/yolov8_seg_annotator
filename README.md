@@ -27,7 +27,7 @@
 A simple tool for labeling object maks in images, implemented with Python Tkinter. 
 
 
-![Alt text](https://images2.imgbox.com/5d/04/RrK3Ocy5_o.png?raw=true "Title")
+![Alt text](https://images2.imgbox.com/65/03/jaRI3lWw_o.png?raw=true "Title")
 
 
 Data Organization
