@@ -59,7 +59,7 @@ If you're new to Labelme, you can get started with [yolov8_seg_annotator Guide](
 
 ### Windows
 ```bash
-pip install -r requirements.txt
+pip install yolov8-seg-annotator
 ```
 
 ## Usage
