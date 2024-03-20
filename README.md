@@ -1,20 +1,34 @@
-yolov8-annotator
-===============
+<h1 align="center">
+  <img src="https://images2.imgbox.com/23/3b/oPFjdMcK_o.png"><br/>yolov8_seg_annotator
+</h1>
 
+<h4 align="center">
+  Image Polygonal Annotation with Python
+</h4>
+
+<div align="center">
+  <a href="https://pypi.org/project/yolov8-seg-annotator/"><img src="https://img.shields.io/badge/pypi-v1.1.0-v1?logo=python"></a>
+  <a href="#"><img src="https://img.shields.io/pypi/pyversions/labelme.svg"></a>
+  <a href="#"><img src="https://img.shields.io/badge/Open%20Source-%C2%A9?style=plastic&logo=python&logoColor=green&color=black&cacheSeconds=3600"></a>
+  <a href="#"><img src="https://img.shields.io/badge/Made%20By-sukruburakcetin-a?style=plastic&logo=python&logoColor=green&color=black&cacheSeconds=3600"></a>
+</div>
+
+<div align="center">
+  <a href="#starter-guide"><b>Starter Guide</b></a>
+  | <a href="#installation"><b>Installation</b></a>
+  | <a href="#usage"><b>Usage</b></a>
+  | <a href="#examples"><b>Examples</b></a>
+  | <a href="https://x.com/labelmeai"><b>X/Twitter</b></a>
+  <!-- | <a href="https://github.com/wkentaro/labelme/discussions"><b>Community</b></a> -->
+  <!-- | <a href="https://www.youtube.com/playlist?list=PLI6LvFw0iflh3o33YYnVIfOpaO0hc5Dzw"><b>Youtube FAQ</b></a> -->
+</div>
+
+## Description
 A simple tool for labeling object maks in images, implemented with Python Tkinter. 
 
-![Alt text](https://images2.imgbox.com/12/d9/7YNMMC61_o.png?raw=true "Title")
 
 ![Alt text](https://images2.imgbox.com/5d/04/RrK3Ocy5_o.png?raw=true "Title")
 
-
-| title    | Yolov8 Annotation Tool |
-|----------|------------------------|
-| app_file | main.py                |
-| dist     | annotator.exe          |
-
-![Static Badge](https://img.shields.io/badge/Open%20Source-%C2%A9?style=plastic&logo=python&logoColor=green&color=black&cacheSeconds=3600)
-![Static Badge](https://img.shields.io/badge/Made%20By-sukruburakcetin-a?style=plastic&logo=python&logoColor=green&color=black&cacheSeconds=3600)
 
 Data Organization
 -----------------
@@ -33,19 +47,29 @@ Data Organization
 └── requirements.txt
 ```
 
-# Requirements
+## Starter Guide
 
-- [pillow](https://pypi.org/project/pillow/)
-pip install pillow==10.2.0
-- [ttkthemes](https://pypi.org/project/ttkthemes/)
-pip install ttkthemes==3.2.2
+If you're new to Labelme, you can get started with [yolov8_seg_annotator Guide]() which contains:
 
+- **Installation guides** for all platforms: Windows. 💪🏼
+- **Step-by-step tutorials**: first annotation to editing, exporting, and integrating with other programs. 🤭
+- **A compilation of valuable resources** for further exploration. 🤗
+
+## Installation
+
+### Windows
+```bash
+pip install -r requirements.txt
+```
 
 ## Usage
-1. ..
-2. ..
+### Command Line Arguments
+Run `yolov8_seg_annotator` to start/execute.
+The annotations are saved as a [TXT]() file in result/labels and annotations are saved in data/annotated.
 
 
+## Results
+### Sample
 Result_YOLO (yolo format) : 
 ```
 8 0.002286 0.750400 0.003429 0.820800 0.037143 0.817600 0.078286 0.801600 0.113143 0.788800 0.152000 0.768000 0.176571 0.756800 0.208000 0.731200 0.241143 0.705600 0.270286 0.680000 0.294857 0.659200 0.326286 0.635200 0.349714 0.617600 0.376571 0.590400 0.392000 0.574400 0.412571 0.542400 0.428000 0.531200 0.423429 0.521600 0.396571 0.536000 0.356571 0.568000 0.315429 0.595200 0.269714 0.619200 0.228000 0.651200 0.173714 0.684800 0.117143 0.710400 0.081143 0.724800 0.044000 0.736000 0.017714 0.747200
