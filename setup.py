@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="yolov8_seg_annotator",
-    version="0.1",
+    version="1.1",
     packages=find_packages(),
     install_requires=[
         "pillow==10.2.0",
