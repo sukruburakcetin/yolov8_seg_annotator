@@ -1,2 +1,5 @@
 pillow==10.2.0
 ttkthemes==3.2.2
+setuptools
+wheel
+twine
