@@ -211,7 +211,7 @@ class AnnotationTool:
 
     def move_image_to_done(self):
         # Check and create 'data/annotated' directory if it doesn't exist
-        done_directory = os.path.join('data', 'annotated')
+        done_directory = os.path.join('../data', 'annotated')
         if not os.path.exists(done_directory):
             os.makedirs(done_directory)
 
@@ -279,7 +279,7 @@ class AnnotationTool:
         chosen_class = self.class_var.get()
         class_id = list(self.class_labels.keys())[list(self.class_labels.values()).index(chosen_class)]
 
-        with open(f"results/labels/{self.image_name}_gt.txt", 'a') as f:  # Use image name for the file
+        with open(f"../results/labels/{self.image_name}_gt.txt", 'a') as f:  # Use image name for the file
             annotation = self.annotations[self.current_polygon_index]
             yolo_format = self.convert_to_yolov8(annotation)
             f.write(f"{class_id} {' '.join(str(coord) for coord in yolo_format)}")
@@ -312,11 +312,11 @@ class AnnotationTool:
                 print("Classes loaded from CSV:", self.class_labels)
 
 
-def main():
+def execute():
     root = tk.Tk()
     app = AnnotationTool(root)
     root.mainloop()
 
 
 if __name__ == "__main__":
-    main()
+    execute()
