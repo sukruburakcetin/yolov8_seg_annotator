@@ -30,6 +30,7 @@ class AnnotationTool:
         self.master = master
         self.master.title("YOLOv8 Annotation Tool")
 
+        # Set up canvas shape properties
         self.canvas_width = 1750
         self.canvas_height = 625
         self.canvas = tk.Canvas(self.master, width=self.canvas_width, height=self.canvas_height, bg='white')
