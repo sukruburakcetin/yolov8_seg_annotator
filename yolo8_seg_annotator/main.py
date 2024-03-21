@@ -44,6 +44,7 @@ class AnnotationTool:
         self.current_polygon_index = 0  # Track the index of the current polygon
         self.exporting = False  # Flag to indicate if exporting is in progress
 
+        # Set theme from ttkthemes lib
         self.style = ThemedStyle(self.master)
         self.style.set_theme('clearlooks')  # Choose a modern theme
 
