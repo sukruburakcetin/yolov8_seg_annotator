@@ -23,7 +23,7 @@ class PrintRedirector:
         self.text_widget.configure(state=tk.DISABLED, font=self.font)
         self.text_widget.see(tk.END)  # Scroll to the end of the text widget
 
-
+# Main project class
 class AnnotationTool:
     def __init__(self, master):
         self.class_menu = None
