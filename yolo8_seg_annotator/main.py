@@ -108,17 +108,6 @@ class AnnotationTool:
         self.class_var.set("Select Class")
         self.class_options = []
 
-        # self.class_window = tk.Toplevel(self.master)
-        # self.class_window.title("Class Assignment")
-        # self.class_window.configure(bg="white")
-
-        # Add label and combobox for class selection
-        # class_label = tk.Label(self.class_window, text="Select Class:", bg="white")
-        # class_label.pack(padx=10, pady=5)
-        #
-        # class_combobox = ttk.Combobox(self.class_window, textvariable=self.class_var, values=self.class_options)
-        # class_combobox.pack(padx=10, pady=5)
-
     def load_image(self):
         # Destroy any existing class windows
         for widget in self.master.winfo_children():
