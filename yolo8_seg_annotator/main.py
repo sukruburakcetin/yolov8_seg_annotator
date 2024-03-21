@@ -48,6 +48,7 @@ class AnnotationTool:
         self.style = ThemedStyle(self.master)
         self.style.set_theme('clearlooks')  # Choose a modern theme
 
+        # Set Buttons
         self.create_button = ttk.Button(self.master, text="Create Polygon", command=self.create_polygon)
         self.create_button.pack(side=tk.LEFT, padx=10, pady=10)
 
