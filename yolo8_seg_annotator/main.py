@@ -378,7 +378,6 @@ class AnnotationTool:
                     self.class_options.append(class_label)
                 print("Classes loaded from CSV:", self.class_labels)
 
-
 def execute():
     root = tk.Tk()
     app = AnnotationTool(root)
