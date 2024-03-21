@@ -10,7 +10,7 @@ from urllib.request import urlopen
 from PIL import Image, ImageTk
 from ttkthemes.themed_style import ThemedStyle
 
-
+# Log screen
 class PrintRedirector:
     def __init__(self, text_widget):
         self.text_widget = text_widget
