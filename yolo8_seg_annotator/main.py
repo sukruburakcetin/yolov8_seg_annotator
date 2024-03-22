@@ -10,6 +10,7 @@ from urllib.request import urlopen
 from PIL import Image, ImageTk
 from ttkthemes.themed_style import ThemedStyle
 
+
 # Log screen
 class PrintRedirector:
     def __init__(self, text_widget):
@@ -23,6 +24,7 @@ class PrintRedirector:
         self.text_widget.configure(state=tk.DISABLED, font=self.font)
         self.text_widget.see(tk.END)  # Scroll to the end of the text widget
 
+
 # Main project class
 class AnnotationTool:
     def __init__(self, master):
@@ -33,7 +35,9 @@ class AnnotationTool:
         # Set up canvas shape properties
         self.canvas_width = 1750
         self.canvas_height = 625
-        self.canvas = tk.Canvas(self.master, width=self.canvas_width, height=self.canvas_height, bg='white')
+        self.canvas = tk.Canvas(
+            self.master, width=self.canvas_width, height=self.canvas_height, bg="white"
+        )
         self.canvas.pack()
 
         self.class_labels = {}
@@ -46,28 +50,42 @@ class AnnotationTool:
 
         # Set theme from ttkthemes lib
         self.style = ThemedStyle(self.master)
-        self.style.set_theme('clearlooks')  # Choose a modern theme
+        self.style.set_theme("clearlooks")  # Choose a modern theme
 
-        self.create_button = ttk.Button(self.master, text="Create Polygon", command=self.create_polygon)
+        # Set Buttons
+        self.create_button = ttk.Button(
+            self.master, text="Create Polygon", command=self.create_polygon
+        )
         self.create_button.pack(side=tk.LEFT, padx=10, pady=10)
 
-        self.finish_button = ttk.Button(self.master, text="Finish Polygon", command=self.finish_polygon)
+        self.finish_button = ttk.Button(
+            self.master, text="Finish Polygon", command=self.finish_polygon
+        )
         self.finish_button.pack(side=tk.LEFT, padx=10, pady=10)
 
-        self.export_button = ttk.Button(self.master, text="Export Annotations", command=self.export_annotations)
+        self.export_button = ttk.Button(
+            self.master, text="Export Annotations", command=self.export_annotations
+        )
         self.export_button.pack(side=tk.LEFT, padx=10, pady=10)
 
-        self.add_class_button = ttk.Button(self.master, text="Add Class", command=self.add_class)
+        self.add_class_button = ttk.Button(
+            self.master, text="Add Class", command=self.add_class
+        )
         self.add_class_button.pack(side=tk.LEFT, padx=10, pady=10)
 
         self.class_label_entry = ttk.Entry(self.master)
         self.class_label_entry.pack(side=tk.LEFT, padx=10, pady=10)
 
-        self.load_classes_button = ttk.Button(self.master, text="Load Classes from CSV",
-                                              command=self.load_classes_from_csv)
+        self.load_classes_button = ttk.Button(
+            self.master,
+            text="Load Classes from CSV",
+            command=self.load_classes_from_csv,
+        )
         self.load_classes_button.pack(side=tk.LEFT, padx=10, pady=10)
 
-        self.load_image_button = ttk.Button(self.master, text="Load Image", command=self.load_image)
+        self.load_image_button = ttk.Button(
+            self.master, text="Load Image", command=self.load_image
+        )
         self.load_image_button.pack(side=tk.LEFT, padx=10, pady=10)
 
         # Image name label
@@ -84,7 +102,9 @@ class AnnotationTool:
         sys.stderr = PrintRedirector(self.print_output)
 
         # Developer name label
-        developer_label = tk.Label(self.master, text="Developer: \nŞükrü Burak Çetin", bg="white")
+        developer_label = tk.Label(
+            self.master, text="Developer: \nŞükrü Burak Çetin", bg="white"
+        )
         developer_label.pack(side=tk.RIGHT, padx=10, pady=10)
 
         # Load the logo image from URL
@@ -107,27 +127,23 @@ class AnnotationTool:
         self.class_var.set("Select Class")
         self.class_options = []
 
-        # self.class_window = tk.Toplevel(self.master)
-        # self.class_window.title("Class Assignment")
-        # self.class_window.configure(bg="white")
-
-        # Add label and combobox for class selection
-        # class_label = tk.Label(self.class_window, text="Select Class:", bg="white")
-        # class_label.pack(padx=10, pady=5)
-        #
-        # class_combobox = ttk.Combobox(self.class_window, textvariable=self.class_var, values=self.class_options)
-        # class_combobox.pack(padx=10, pady=5)
-
     def load_image(self):
         # Destroy any existing class windows
         for widget in self.master.winfo_children():
             if isinstance(widget, tk.Toplevel):
                 widget.destroy()
 
-        initial_dir = self.last_image_directory if hasattr(self, 'last_image_directory') else '/'
-        initial_file = self.last_loaded_image if hasattr(self, 'last_loaded_image') else ''
-        file_path = filedialog.askopenfilename(initialdir=initial_dir, initialfile=initial_file,
-                                               filetypes=[("Image files", "*.png;*.jpg;*.jpeg")])
+        initial_dir = (
+            self.last_image_directory if hasattr(self, "last_image_directory") else "/"
+        )
+        initial_file = (
+            self.last_loaded_image if hasattr(self, "last_loaded_image") else ""
+        )
+        file_path = filedialog.askopenfilename(
+            initialdir=initial_dir,
+            initialfile=initial_file,
+            filetypes=[("Image files", "*.png;*.jpg;*.jpeg")],
+        )
         if file_path:
             # Extract directory path and file name from the selected file path
             self.last_image_directory, self.last_loaded_image = os.path.split(file_path)
@@ -136,8 +152,12 @@ class AnnotationTool:
             self.clear_polygons()
             self.annotations = []
 
-            self.image_name = self.last_loaded_image.split(".jpg")[0]  # Get the image name
-            self.image_name_label.config(text=f"Image: {self.image_name}")  # Update image name label
+            self.image_name = self.last_loaded_image.split(".jpg")[
+                0
+            ]  # Get the image name
+            self.image_name_label.config(
+                text=f"Image: {self.image_name}"
+            )  # Update image name label
             self.image = Image.open(file_path)
             # Resize image while maintaining aspect ratio
             self.image.thumbnail((self.canvas_width, self.canvas_height))
@@ -149,15 +169,23 @@ class AnnotationTool:
         if class_label:
             self.class_labels[len(self.class_labels)] = class_label
             self.class_label_entry.delete(0, tk.END)
-            print("Class '{}' added with ID {}.".format(class_label, len(self.class_labels) - 1))
+            print(
+                "Class '{}' added with ID {}.".format(
+                    class_label, len(self.class_labels) - 1
+                )
+            )
 
     def create_polygon(self):
         self.canvas.bind("<Button-1>", self.on_click)
-        self.canvas.bind("<Button-3>", self.clear_points)  # Bind right mouse button to clear points
+        self.canvas.bind(
+            "<Button-3>", self.clear_points
+        )  # Bind right mouse button to clear points
 
     def finish_polygon(self):
         if len(self.current_polygon) > 2:
-            polygon_item = self.canvas.create_polygon(self.current_polygon, outline="yellow", fill="", width=2)
+            polygon_item = self.canvas.create_polygon(
+                self.current_polygon, outline="yellow", fill="", width=2
+            )
             self.polygon_items.append(polygon_item)
             self.annotations.append(self.current_polygon)
             self.current_polygon = []
@@ -168,8 +196,9 @@ class AnnotationTool:
     def on_click(self, event):
         x, y = event.x, event.y
         self.current_polygon.extend([x, y])
-        self.canvas.create_oval(x - 2, y - 2, x + 2, y + 2, fill="yellow",
-                                tags="points")  # Add "points" tag to the oval
+        self.canvas.create_oval(
+            x - 2, y - 2, x + 2, y + 2, fill="yellow", tags="points"
+        )  # Add "points" tag to the oval
 
     def clear_polygons(self):
         for item in self.polygon_items:
@@ -179,14 +208,16 @@ class AnnotationTool:
 
     def clear_points(self, event):
         self.current_polygon = []  # Clear the current polygon points
-        self.canvas.delete("points")  # Delete all points on the canvas with the "points" tag
+        self.canvas.delete(
+            "points"
+        )  # Delete all points on the canvas with the "points" tag
 
     def export_annotations(self):
         if not self.annotations:
             print("No annotations to export.")
             return
 
-        if not hasattr(self, 'image_name'):
+        if not hasattr(self, "image_name"):
             print("Please load an image first.")
             return
 
@@ -202,10 +233,14 @@ class AnnotationTool:
         self.class_var.set("Select Class")
 
         self.class_options = list(self.class_labels.values())
-        self.class_menu = ttk.Combobox(self.class_window, textvariable=self.class_var, values=self.class_options)
+        self.class_menu = ttk.Combobox(
+            self.class_window, textvariable=self.class_var, values=self.class_options
+        )
 
         self.class_menu.pack(padx=50, pady=5)
-        self.done_button = ttk.Button(self.class_window, text="Done", command=self.class_selected)
+        self.done_button = ttk.Button(
+            self.class_window, text="Done", command=self.class_selected
+        )
         self.done_button.pack(padx=50, pady=5)
 
         # Start exporting polygons
@@ -213,17 +248,21 @@ class AnnotationTool:
 
     def move_image_to_done(self):
         # Check and create 'data/annotated' directory if it doesn't exist
-        done_directory = os.path.join('../data', 'annotated')
+        done_directory = os.path.join("../data", "annotated")
         if not os.path.exists(done_directory):
             os.makedirs(done_directory)
 
         # Move the image to the 'done' directory
-        if hasattr(self, 'last_image_directory') and hasattr(self, 'last_loaded_image'):
-            source_path = os.path.join(self.last_image_directory, self.last_loaded_image)
+        if hasattr(self, "last_image_directory") and hasattr(self, "last_loaded_image"):
+            source_path = os.path.join(
+                self.last_image_directory, self.last_loaded_image
+            )
             destination_path = os.path.join(done_directory, self.last_loaded_image)
             try:
                 shutil.move(source_path, destination_path)
-                print(f"Image {self.last_loaded_image} moved to 'data/annotated' directory.")
+                print(
+                    f"Image {self.last_loaded_image} moved to 'data/annotated' directory."
+                )
             except Exception as e:
                 print(f"Error moving image to 'done' directory: {e}")
 
@@ -231,10 +270,16 @@ class AnnotationTool:
         if self.current_polygon_index < len(self.annotations):
             # Remove blue indication from the previously highlighted polygon
             if self.current_polygon_index > 0:
-                self.canvas.itemconfig(self.polygon_items[self.current_polygon_index - 1], outline="yellow", width=2)
+                self.canvas.itemconfig(
+                    self.polygon_items[self.current_polygon_index - 1],
+                    outline="yellow",
+                    width=2,
+                )
 
             # Highlight the current polygon
-            self.canvas.itemconfig(self.polygon_items[self.current_polygon_index], outline="blue", width=2)
+            self.canvas.itemconfig(
+                self.polygon_items[self.current_polygon_index], outline="blue", width=2
+            )
 
         else:
             print("All annotations exported successfully.")
@@ -245,7 +290,9 @@ class AnnotationTool:
 
     def highlight_next_polygon(self):
         if self.current_polygon_index < len(self.polygon_items):
-            self.canvas.itemconfig(self.polygon_items[self.current_polygon_index], outline="blue", width=2)
+            self.canvas.itemconfig(
+                self.polygon_items[self.current_polygon_index], outline="blue", width=2
+            )
             self.choose_class()  # Prompt user to select class ID
         else:
             print("All annotations exported successfully.")
@@ -264,31 +311,46 @@ class AnnotationTool:
 
             class_menu.pack(padx=50, pady=15)
 
-            done_button = ttk.Button(class_window, text="Done",
-                                     command=lambda: self.class_selected(class_window, class_var))
+            done_button = ttk.Button(
+                class_window,
+                text="Done",
+                command=lambda: self.class_selected(class_window, class_var),
+            )
             done_button.pack(padx=50, pady=15)
 
             # Remove blue indication from the previously highlighted polygon
             if self.current_polygon_index > 0:
-                self.canvas.itemconfig(self.polygon_items[self.current_polygon_index - 1], outline="yellow", width=2)
+                self.canvas.itemconfig(
+                    self.polygon_items[self.current_polygon_index - 1],
+                    outline="yellow",
+                    width=2,
+                )
 
             # Highlight the current polygon
-            self.canvas.itemconfig(self.polygon_items[self.current_polygon_index], outline="blue", width=2)
+            self.canvas.itemconfig(
+                self.polygon_items[self.current_polygon_index], outline="blue", width=2
+            )
 
             class_window.wait_window()
 
     def class_selected(self):
         chosen_class = self.class_var.get()
-        class_id = list(self.class_labels.keys())[list(self.class_labels.values()).index(chosen_class)]
+        class_id = list(self.class_labels.keys())[
+            list(self.class_labels.values()).index(chosen_class)
+        ]
         # Create results/labels directory if it doesn't exist
         labels_dir = "/results/labels"
         os.makedirs(labels_dir, exist_ok=True)
 
-        with open(f"../results/labels/{self.image_name}_gt.txt", 'a') as f:  # Use image name for the file
+        with open(
+            f"../results/labels/{self.image_name}_gt.txt", "a"
+        ) as f:  # Use image name for the file
             annotation = self.annotations[self.current_polygon_index]
             yolo_format = self.convert_to_yolov8(annotation)
             f.write(f"{class_id} {' '.join(str(coord) for coord in yolo_format)}")
-            if self.current_polygon_index < len(self.annotations) - 1:  # Check if it's not the last annotation
+            if (
+                self.current_polygon_index < len(self.annotations) - 1
+            ):  # Check if it's not the last annotation
                 f.write("\n")  # Append newline if it's not the last annotation
 
         self.current_polygon_index += 1  # Move to the next polygon
@@ -307,7 +369,7 @@ class AnnotationTool:
     def load_classes_from_csv(self):
         file_path = filedialog.askopenfilename(filetypes=[("CSV files", "*.csv")])
         if file_path:
-            with open(file_path, 'r') as csvfile:
+            with open(file_path, "r") as csvfile:
                 csvreader = csv.reader(csvfile)
                 for idx, row in enumerate(csvreader):
                     class_label = row[0]
@@ -315,7 +377,6 @@ class AnnotationTool:
                     self.class_labels[str(class_id)] = class_label
                     self.class_options.append(class_label)
                 print("Classes loaded from CSV:", self.class_labels)
-
 
 def execute():
     root = tk.Tk()
