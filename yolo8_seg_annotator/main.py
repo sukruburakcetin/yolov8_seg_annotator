@@ -271,7 +271,7 @@ class AnnotationTool:
         chosen_class = self.class_var.get()
         class_id = list(self.class_labels.keys())[list(self.class_labels.values()).index(chosen_class)]
         # Create results/labels directory if it doesn't exist
-        labels_dir = "/results/labels"
+        labels_dir = "../results/labels"
         os.makedirs(labels_dir, exist_ok=True)
 
         with open(f"../results/labels/{self.image_name}_gt.txt", 'a') as f:  # Use image name for the file
