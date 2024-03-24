@@ -10,6 +10,7 @@ from urllib.request import urlopen
 from PIL import Image, ImageTk
 from ttkthemes.themed_style import ThemedStyle
 
+
 # Log screen
 class PrintRedirector:
     def __init__(self, text_widget):
@@ -23,9 +24,13 @@ class PrintRedirector:
         self.text_widget.configure(state=tk.DISABLED, font=self.font)
         self.text_widget.see(tk.END)  # Scroll to the end of the text widget
 
+
 # Main project class
 class AnnotationTool:
     def __init__(self, master):
+        self.done_button = None
+        self.last_loaded_image = None
+        self.last_image_directory = None
         self.class_menu = None
         self.master = master
         self.master.title("YOLOv8 Annotation Tool")
@@ -274,7 +279,7 @@ class AnnotationTool:
         labels_dir = "../results/labels"
         os.makedirs(labels_dir, exist_ok=True)
 
-        with open(f"../results/labels/{self.image_name}_gt.txt", 'a') as f:  # Use image name for the file
+        with open(f"../results/labels{self.image_name}_gt.txt", 'a') as f:  # Use image name for the file
             annotation = self.annotations[self.current_polygon_index]
             yolo_format = self.convert_to_yolov8(annotation)
             f.write(f"{class_id} {' '.join(str(coord) for coord in yolo_format)}")
